@@ -91,7 +91,7 @@ class CreateFiles:
                 file_oldname = os.path.join(f"{self.OUT_DIR}/{user['username']}.txt")
 
                 time_old_file = datetime.datetime.fromtimestamp(
-                    getctime(f"{self.OUT_DIR}/{user['username']}.txt")).strftime('%H:%M:%S')
+                    getctime(f"{self.OUT_DIR}/{user['username']}.txt")).strftime('%Y-%m-%dT%H:%M')
 
                 file_newname_newfile = os.path.join(f"{self.OUT_DIR}/old_{user['username']}_{time_old_file}.txt")
 
