@@ -6,10 +6,11 @@ class DataApi:
     def __init__(self):
         self.todos = list()
         self.users = list()
+        self.API_BASE = 'https://json.medrating.org'
 
     def get_users(self):
         try:
-            api_response = requests.get('https://json.medrating.org/users')
+            api_response = requests.get(f'{self.API_BASE}/users')
             if api_response.status_code != 200:
                 print('Произошла ошибка!')
                 print(api_response.status_code)
@@ -26,7 +27,7 @@ class DataApi:
 
     def get_todos(self):
         try:
-            api_response = requests.get('https://json.medrating.org/todos')
+            api_response = requests.get(f'{self.API_BASE}/todos')
             if api_response.status_code != 200:
                 print('Произошла ошибка!')
                 print(api_response.status_code)
