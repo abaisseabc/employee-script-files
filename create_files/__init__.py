@@ -1,5 +1,7 @@
-from os import makedirs
+import os
 import datetime
+from os import makedirs
+from os.path import getctime
 
 
 class CreateFiles:
@@ -77,11 +79,27 @@ class CreateFiles:
 
         return template
 
+    def _write_file(self, user):
+        with open(f"{self.OUT_DIR}/{user['username']}.txt", 'w') as f:
+            template = self._create_template(user)
+            f.write(template)
+
     def _create_files_by_users(self, data: list):
         for user in data:
-            with open(f"{self.OUT_DIR}/{user['username']}.txt", 'w') as f:
-                template = self._create_template(user)
-                f.write(template)
+            if os.path.exists(f"{self.OUT_DIR}/{user['username']}.txt"):
+
+                file_oldname = os.path.join(f"{self.OUT_DIR}/{user['username']}.txt")
+
+                time_old_file = datetime.datetime.fromtimestamp(
+                    getctime(f"{self.OUT_DIR}/{user['username']}.txt")).strftime('%H:%M:%S')
+
+                file_newname_newfile = os.path.join(f"{self.OUT_DIR}/old_{user['username']}_{time_old_file}.txt")
+
+                os.rename(file_oldname, file_newname_newfile)
+
+                self._write_file(user)
+            else:
+                self._write_file(user)
 
     def create(self):
         self._create_directory()
