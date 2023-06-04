@@ -14,6 +14,18 @@ class CreateFiles:
         except OSError:
             raise OSError(f"Не удается создать каталог назначения {self.OUT_DIR}!")
 
+    @staticmethod
+    def _add_tasks_for_user(user, todo, total):
+        for task in total:
+            if (
+                    user['id'] == todo['userId'] and
+                    task['id'] == user['id'] and
+                    task['id'] == todo['userId']
+            ):
+                task['tasks'].append(todo)
+
+        return total
+
     def _search_task(self):
         total_task_user = list()
         for user in self.users:
@@ -27,49 +39,48 @@ class CreateFiles:
                 })
             for todo in self.todos:
                 if 'userId' in todo:
-                    for task in total_task_user:
-                        if (
-                                user['id'] == todo['userId'] and
-                                task['id'] == user['id'] and
-                                task['id'] == todo['userId']
-                        ):
-                            task['tasks'].append(todo)
+                    total_task_user = self._add_tasks_for_user(user, todo, total_task_user)
 
         return total_task_user
 
-    def _create_files_by_users(self, data: list):
+    @staticmethod
+    def _create_template(user):
         now_time = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
 
+        completed_task = list()
+        outstanding_tasks = list()
+
+        completed_task_template = str()
+        outstanding_tasks_template = str()
+
+        for task in user['tasks']:
+            if task['completed'] is False:
+                outstanding_tasks.append(task)
+                outstanding_tasks_template += f"{task['title']} \n \n"
+            else:
+                completed_task.append(task)
+                completed_task_template += f"{task['title']} \n \n"
+
+        template = f"Отчет для {user['username']}. \n" \
+                   f"\n" \
+                   f"{user['name']} <{user['email']}> {now_time} \n" \
+                   f"\n" \
+                   f"Всего задач: {len(user['tasks'])} \n" \
+                   f"\n" \
+                   f"\n" \
+                   f"\n" \
+                   f"Завершённые задачи ({len(completed_task)}): \n \n" \
+                   f"{completed_task_template} \n" \
+                   f"\n" \
+                   f"Оставшиеся задачи ({len(outstanding_tasks)}): \n \n" \
+                   f"{outstanding_tasks_template}"
+
+        return template
+
+    def _create_files_by_users(self, data: list):
         for user in data:
             with open(f"{self.OUT_DIR}/{user['username']}.txt", 'w') as f:
-
-                completed_task = list()
-                outstanding_tasks = list()
-
-                completed_task_template = str()
-                outstanding_tasks_template = str()
-                for task in user['tasks']:
-                    if task['completed'] is False:
-                        outstanding_tasks.append(task)
-                        outstanding_tasks_template += f"{task['title']} \n \n"
-                    else:
-                        completed_task.append(task)
-                        completed_task_template += f"{task['title']} \n \n"
-
-                template = f"Отчет для {user['username']}. \n" \
-                           f"\n" \
-                           f"{user['name']} <{user['email']}> {now_time} \n" \
-                           f"\n" \
-                           f"Всего задач: {len(user['tasks'])} \n" \
-                           f"\n" \
-                           f"\n" \
-                           f"\n" \
-                           f"Завершённые задачи ({len(completed_task)}): \n \n" \
-                           f"{completed_task_template} \n" \
-                           f"\n" \
-                           f"Оставшиеся задачи ({len(outstanding_tasks)}): \n \n" \
-                           f"{outstanding_tasks_template}"
-
+                template = self._create_template(user)
                 f.write(template)
 
     def create(self):
