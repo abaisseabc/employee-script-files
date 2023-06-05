@@ -17,7 +17,7 @@ class CreateFiles:
             raise OSError(f"Не удается создать каталог назначения {self.OUT_DIR}!")
 
     @staticmethod
-    def _add_tasks_for_user(user, todo, total):
+    def _add_tasks_for_user(user: dict, todo: dict, total: list) -> list:
         for task in total:
             if (
                     user['id'] == todo['userId'] and
@@ -46,7 +46,7 @@ class CreateFiles:
         return total_task_user
 
     @staticmethod
-    def _create_template(user):
+    def _create_template(user: dict) -> str:
         now_time = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
 
         completed_task = list()
@@ -79,7 +79,7 @@ class CreateFiles:
 
         return template
 
-    def _write_file(self, user):
+    def _write_file(self, user: dict):
         with open(f"{self.OUT_DIR}/{user['username']}.txt", 'w') as f:
             template = self._create_template(user)
             f.write(template)
