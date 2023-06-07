@@ -6,7 +6,7 @@ class DataApi:
     def __init__(self):
         self.todos = list()
         self.users = list()
-        self.API_BASE = 'https://json.medrating.org'
+        self.API_BASE = 'https://jsonplaceholder.typicode.com'
 
     def get_users(self):
         try:
