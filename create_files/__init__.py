@@ -5,16 +5,11 @@ from os.path import getctime
 
 
 class CreateFiles:
-    def __init__(self, todos_api: list, users_api: list):
+    def __init__(self, todos_api: list, users_api: list, folder: str):
         self.todos = todos_api
         self.users = users_api
-        self.OUT_DIR = 'tasks'
-
-    def _create_directory(self):
-        try:
-            makedirs(self.OUT_DIR, exist_ok=True)
-        except OSError:
-            raise OSError(f"Не удается создать каталог назначения {self.OUT_DIR}!")
+        self.OUT_DIR = folder
+        self.MAX_TASK_TITLE_LEN = 50
 
     @staticmethod
     def _add_tasks_for_user(user: dict, todo: dict, total: list) -> list:
@@ -45,8 +40,7 @@ class CreateFiles:
 
         return total_task_user
 
-    @staticmethod
-    def _create_template(user: dict) -> str:
+    def _create_template(self, user: dict) -> str:
         now_time = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
 
         completed_task = list()
@@ -58,10 +52,16 @@ class CreateFiles:
         for task in user['tasks']:
             if task['completed'] is False:
                 outstanding_tasks.append(task)
-                outstanding_tasks_template += f"{task['title']} \n \n"
+                if len(task['title']) <= self.MAX_TASK_TITLE_LEN:
+                    outstanding_tasks_template += f"{task['title']} \n \n"
+                else:
+                    outstanding_tasks_template += f"{task['title'][:self.MAX_TASK_TITLE_LEN]} ... \n \n"
             else:
                 completed_task.append(task)
-                completed_task_template += f"{task['title']} \n \n"
+                if len(task['title']) <= self.MAX_TASK_TITLE_LEN:
+                    completed_task_template += f"{task['title']} \n \n"
+                else:
+                    completed_task_template += f"{task['title'][:self.MAX_TASK_TITLE_LEN]} ... \n \n"
 
         template = f"Отчет для {user['username']}. \n" \
                    f"\n" \
@@ -102,6 +102,5 @@ class CreateFiles:
                 self._write_file(user)
 
     def create(self):
-        self._create_directory()
         data_for_file = self._search_task()
         self._create_files_by_users(data_for_file)
