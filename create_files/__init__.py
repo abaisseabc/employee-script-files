@@ -40,28 +40,46 @@ class CreateFiles:
 
         return total_task_user
 
-    def _create_template(self, user: dict) -> str:
-        now_time = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
-
-        completed_task = list()
-        outstanding_tasks = list()
+    def _create_data_template(self, user: dict):
+        completed_task = 0
+        outstanding_tasks = 0
 
         completed_task_template = str()
         outstanding_tasks_template = str()
 
         for task in user['tasks']:
             if task['completed'] is False:
-                outstanding_tasks.append(task)
+                outstanding_tasks = outstanding_tasks + 1
                 if len(task['title']) <= self.MAX_TASK_TITLE_LEN:
                     outstanding_tasks_template += f"{task['title']} \n \n"
                 else:
                     outstanding_tasks_template += f"{task['title'][:self.MAX_TASK_TITLE_LEN]} ... \n \n"
             else:
-                completed_task.append(task)
+                completed_task = completed_task + 1
                 if len(task['title']) <= self.MAX_TASK_TITLE_LEN:
                     completed_task_template += f"{task['title']} \n \n"
                 else:
                     completed_task_template += f"{task['title'][:self.MAX_TASK_TITLE_LEN]} ... \n \n"
+
+        completed = {
+            'length': completed_task,
+            'data': completed_task_template
+        }
+
+        outstanding = {
+            'length': outstanding_tasks,
+            'data': outstanding_tasks_template
+        }
+
+        return completed, outstanding
+
+    def _create_template(self, user: dict) -> str:
+        now_time = datetime.datetime.now().strftime("%d.%m.%Y %H:%M")
+
+        tasks = self._create_data_template(user)
+
+        completed_task = tasks[0]
+        outstanding_tasks = tasks[1]
 
         template = f"Отчет для {user['username']}. \n" \
                    f"\n" \
@@ -71,11 +89,11 @@ class CreateFiles:
                    f"\n" \
                    f"\n" \
                    f"\n" \
-                   f"Завершённые задачи ({len(completed_task)}): \n \n" \
-                   f"{completed_task_template} \n" \
+                   f"Завершённые задачи ({completed_task['length']}): \n \n" \
+                   f"{completed_task['data']} \n" \
                    f"\n" \
-                   f"Оставшиеся задачи ({len(outstanding_tasks)}): \n \n" \
-                   f"{outstanding_tasks_template}"
+                   f"Оставшиеся задачи ({outstanding_tasks['length']}): \n \n" \
+                   f"{outstanding_tasks['data']}"
 
         return template
 
