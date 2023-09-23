@@ -1,5 +1,5 @@
-from get_data_from_api import DataApi
-from create_files import CreateFiles
+from data_api import DataApi
+from files import Files
 from os import makedirs
 
 OUT_DIR = 'tasks'
@@ -15,11 +15,11 @@ def create_directory_tasks():
 def main():
     create_directory_tasks()
 
-    todos = DataApi().get_todos()
-    users = DataApi().get_users()
+    todos = DataApi('todos').get()
+    users = DataApi('users').get()
 
     if todos and users:
-        CreateFiles(todos, users, OUT_DIR).create()
+        Files(todos, users, OUT_DIR).create()
     else:
         print('Данные о пользователях и задачах не были получены')
 

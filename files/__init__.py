@@ -4,7 +4,7 @@ from os import makedirs
 from os.path import getctime
 
 
-class CreateFiles:
+class Files:
     def __init__(self, todos_api: list, users_api: list, folder: str):
         self.todos = todos_api
         self.users = users_api
