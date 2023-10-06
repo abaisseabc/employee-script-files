@@ -1,5 +1,5 @@
-from data_api import DataApi
-from files import Files
+from data_api.data_api import DataApi
+from files.files import Files
 from os import makedirs
 
 OUT_DIR = 'tasks'
