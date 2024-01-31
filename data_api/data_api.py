@@ -1,15 +1,16 @@
 import requests
 import json
 
+API_BASE = 'https://jsonplaceholder.typicode.com'
+
 
 class DataApi:
     def __init__(self, parameter: str):
         self.parameter = parameter
-        self.API_BASE = 'https://jsonplaceholder.typicode.com'
 
     def get(self) -> list:
         try:
-            api_response = requests.get(f'{self.API_BASE}/{self.parameter}')
+            api_response = requests.get(f'{API_BASE}/{self.parameter}')
             if api_response.status_code != 200:
                 print('Произошла ошибка!')
                 print(api_response.status_code)
